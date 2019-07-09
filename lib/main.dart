@@ -1,102 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Hello Flutter',
-      theme: ThemeData(primaryColor: Colors.amber),
-      home: RandomWords(),
-    );
-  }
-}
-
-class RandomWords extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return RandomWordsState();
-  }
-}
-
-class RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
-  final _saved = Set<WordPair>();
-  final _biggerFont = const TextStyle(fontSize: 18.0);
-
-  Widget _buildRow(WordPair pair) {
-    final bool alreadySaved = _saved.contains(pair);
-    return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: _biggerFont,
-      ),
-      trailing: Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.deepOrange : null,
-      ),
-      onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
-    );
-  }
-
-  Widget _buildSuggestions() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: (context, i) {
-        if (i.isOdd) return Divider();
-        final index = i ~/ 2;
-        if (index >= _suggestions.length) {
-          _suggestions.addAll(generateWordPairs().take(10));
-        }
-        return _buildRow(_suggestions[index]);
-      },
-    );
-  }
-
-  void _pushSaved() {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      final Iterable<ListTile> tiles = _saved.map((WordPair pair) {
-        return ListTile(
-          title: Text(
-            pair.asPascalCase,
-            style: _biggerFont,
-          ),
-        );
-      });
-      final List<Widget> divided = ListTile.divideTiles(
-        context: context,
-        tiles: tiles,
-      ).toList();
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Saved Suggestions'),
+void main() {
+  runApp(MaterialApp(
+      title: 'Some title',
+      home: Scaffold(
+          body: Center(
+        child: Counter(
+          max: 10,
         ),
-        body: ListView(children: divided),
-      );
-    }));
+      ))));
+}
+
+class Counter extends StatefulWidget {
+  final int max;
+
+  Counter({ this.max });
+
+  @override
+  CounterState createState() => CounterState(max: this.max);
+}
+
+class CounterState extends State<Counter> {
+  int _count = 0;
+  final int max;
+
+  CounterState({ this.max });
+
+  void _increment() {
+    setState(() {
+      if (_count < max) {
+        _count++;
+      }
+    });
+  }
+
+  void _initialize() {
+    setState(() {
+      _count = 0;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: Text('Startup Name Generaor',
-              style: TextStyle(color: Colors.white)),
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.list, color: Colors.white ), onPressed: _pushSaved)
-          ]),
-      body: _buildSuggestions(),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        RaisedButton(onPressed: _increment, child: Text('Increment')),
+        RaisedButton(onPressed: _initialize, child: Text('Initialize')),
+        Text('Count: $_count', style: TextStyle(
+          color: this._count == this.max ? Colors.red : null,
+        )),
+        Visibility(
+          child: Text('Baraka me tesbih a5ay'),
+          visible: this._count == this.max,
+        )
+      ],
     );
   }
 }
